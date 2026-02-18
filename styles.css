@@ -1,13 +1,13 @@
 :root {
-  --bg-0: #090a25;
-  --bg-1: #1b0f45;
-  --bg-2: #2b1662;
-  --ink: #f9f7ff;
-  --soft: rgba(255, 255, 255, 0.72);
-  --neon-a: #7de2ff;
-  --neon-b: #ff66dc;
+  --bg-0: #0a1220;
+  --bg-1: #15263c;
+  --bg-2: #1f3550;
+  --ink: #eef2fb;
+  --soft: rgba(221, 232, 248, 0.8);
+  --neon-a: #74bce7;
+  --neon-b: #9ec8ff;
   --panel: rgba(16, 17, 39, 0.56);
-  --line: rgba(255, 255, 255, 0.24);
+  --line: rgba(186, 206, 235, 0.2);
 }
 
 * {
@@ -20,8 +20,8 @@ body {
   font-family: "Trebuchet MS", "Hina Mincho", "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at 15% 20%, #321d7a55 0%, transparent 42%),
-    radial-gradient(circle at 82% 74%, #0f6c8d55 0%, transparent 36%),
+    radial-gradient(circle at 15% 20%, #34527d55 0%, transparent 42%),
+    radial-gradient(circle at 82% 74%, #2b5a7f55 0%, transparent 36%),
     linear-gradient(160deg, var(--bg-0), var(--bg-1) 55%, var(--bg-2));
 }
 
@@ -100,6 +100,7 @@ button {
   cursor: pointer;
   font-weight: 700;
   transition: transform 180ms ease;
+  color: #15233f;
 }
 
 button:disabled {
@@ -142,7 +143,7 @@ input[type="range"] {
   min-height: min(68vh, 560px);
   position: relative;
   box-shadow:
-    0 26px 80px rgba(0, 0, 0, 0.45),
+    0 18px 56px rgba(0, 0, 0, 0.35),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   animation: fadeIn 900ms ease-out 180ms both;
 }
@@ -155,7 +156,7 @@ input[type="range"] {
   pointer-events: none;
   border-radius: 50%;
   filter: blur(35px);
-  opacity: 0.4;
+  opacity: 0.22;
 }
 
 .canvas-shell::before {
@@ -163,7 +164,7 @@ input[type="range"] {
   height: 30vmin;
   left: -6vmin;
   top: -8vmin;
-  background: radial-gradient(circle, #3dd3ff99, transparent 65%);
+  background: radial-gradient(circle, #4fb4db66, transparent 68%);
 }
 
 .canvas-shell::after {
@@ -171,7 +172,7 @@ input[type="range"] {
   height: 28vmin;
   right: -8vmin;
   bottom: -8vmin;
-  background: radial-gradient(circle, #ff5ff499, transparent 64%);
+  background: radial-gradient(circle, #7fd4dc55, transparent 66%);
 }
 
 #visionCanvas {
