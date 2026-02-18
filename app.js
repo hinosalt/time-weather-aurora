@@ -171,54 +171,64 @@ function draw(time) {
     return;
   }
 
-  const mode = modeSelect.value;
-  const intensity = getIntensity();
-  const cfg = modeSettings[mode];
+  if (!camera.videoWidth || !camera.videoHeight) {
+    setStatus("カメラ映像の初期化を待機中...");
+    animationId = requestAnimationFrame(draw);
+    return;
+  }
 
-  sourceCtx.drawImage(camera, 0, 0, procWidth, procHeight);
-  transformFrame(time, mode, intensity);
-  artCtx.putImageData(transformedImageData, 0, 0);
+  try {
+    const mode = modeSelect.value;
+    const intensity = getIntensity();
+    const cfg = modeSettings[mode];
 
-  visionCtx.clearRect(0, 0, visionCanvas.width, visionCanvas.height);
-  visionCtx.imageSmoothingEnabled = true;
-  visionCtx.filter = `saturate(${120 + intensity}%) contrast(${110 + intensity * 0.4}%)`;
-  visionCtx.drawImage(artCanvas, 0, 0, visionCanvas.width, visionCanvas.height);
+    sourceCtx.drawImage(camera, 0, 0, procWidth, procHeight);
+    transformFrame(time, mode, intensity);
+    artCtx.putImageData(transformedImageData, 0, 0);
 
-  const wobble = intensity / 100;
-  const shiftX = Math.sin(time * 0.001) * 7 * wobble;
-  const shiftY = Math.cos(time * 0.0014) * 6 * wobble;
+    visionCtx.clearRect(0, 0, visionCanvas.width, visionCanvas.height);
+    visionCtx.imageSmoothingEnabled = true;
+    visionCtx.filter = `saturate(${120 + intensity}%) contrast(${110 + intensity * 0.4}%)`;
+    visionCtx.drawImage(artCanvas, 0, 0, visionCanvas.width, visionCanvas.height);
 
-  visionCtx.globalCompositeOperation = "screen";
-  visionCtx.filter = `blur(${1 + intensity / 60}px)`;
-  visionCtx.globalAlpha = 0.28;
-  visionCtx.drawImage(
-    artCanvas,
-    shiftX,
-    shiftY,
-    visionCanvas.width,
-    visionCanvas.height,
-  );
+    const wobble = intensity / 100;
+    const shiftX = Math.sin(time * 0.001) * 7 * wobble;
+    const shiftY = Math.cos(time * 0.0014) * 6 * wobble;
 
-  visionCtx.globalCompositeOperation = "color";
-  visionCtx.filter = "none";
-  visionCtx.globalAlpha = 0.18;
-  visionCtx.fillStyle = `rgba(${cfg.hueGlow}, ${0.35 + intensity / 300})`;
-  visionCtx.fillRect(0, 0, visionCanvas.width, visionCanvas.height);
+    visionCtx.globalCompositeOperation = "screen";
+    visionCtx.filter = `blur(${1 + intensity / 60}px)`;
+    visionCtx.globalAlpha = 0.28;
+    visionCtx.drawImage(
+      artCanvas,
+      shiftX,
+      shiftY,
+      visionCanvas.width,
+      visionCanvas.height,
+    );
 
-  visionCtx.globalCompositeOperation = "source-over";
-  visionCtx.globalAlpha = 1;
-  visionCtx.filter = "none";
+    visionCtx.globalCompositeOperation = "color";
+    visionCtx.filter = "none";
+    visionCtx.globalAlpha = 0.18;
+    visionCtx.fillStyle = `rgba(${cfg.hueGlow}, ${0.35 + intensity / 300})`;
+    visionCtx.fillRect(0, 0, visionCanvas.width, visionCanvas.height);
 
-  const vibe = Math.min(1, Math.max(0.2, (time % 2000) / 2000));
-  visionCtx.globalCompositeOperation = "source-over";
-  const grad = visionCtx.createLinearGradient(0, 0, visionCanvas.width, visionCanvas.height);
-  grad.addColorStop(0, "rgba(255,255,255,0.05)");
-  grad.addColorStop(0.5, "rgba(255,255,255,0)");
-  grad.addColorStop(1, "rgba(255,255,255,0.08)");
-  visionCtx.fillStyle = grad;
-  visionCtx.fillRect(0, 0, visionCanvas.width, visionCanvas.height);
+    visionCtx.globalCompositeOperation = "source-over";
+    visionCtx.globalAlpha = 1;
+    visionCtx.filter = "none";
 
-  setStatus(`動作中: ${mode} / 強度 ${intensity}%`);
+    const grad = visionCtx.createLinearGradient(0, 0, visionCanvas.width, visionCanvas.height);
+    grad.addColorStop(0, "rgba(255,255,255,0.05)");
+    grad.addColorStop(0.5, "rgba(255,255,255,0)");
+    grad.addColorStop(1, "rgba(255,255,255,0.08)");
+    visionCtx.fillStyle = grad;
+    visionCtx.fillRect(0, 0, visionCanvas.width, visionCanvas.height);
+
+    setStatus(`動作中: ${mode} / 強度 ${intensity}%`);
+  } catch (error) {
+    setStatus(`描画中にエラー: ${error.message}`);
+    stopCamera();
+    return;
+  }
 
   animationId = requestAnimationFrame(draw);
 }
@@ -354,6 +364,7 @@ async function startCamera() {
 
     camera.srcObject = stream;
     await camera.play().catch(() => {});
+    setStatus("カメラストリームを取得しました。フレーム到着待機中...");
     await waitForCameraFrame(camera);
 
     resizeCanvases();
